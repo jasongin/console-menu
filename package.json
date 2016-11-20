@@ -1,0 +1,25 @@
+{
+  "name": "console-menu",
+  "version": "0.1.0",
+  "description": "A scrollable menu for the Node.js console",
+  "main": "console-menu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasongin/console-menu.git"
+  },
+  "keywords": [
+    "menu"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasongin/console-menu/issues"
+  },
+  "homepage": "https://github.com/jasongin/console-menu#readme",
+  "dependencies": {
+    "keypress": "^0.2.1"
+  }
+}
