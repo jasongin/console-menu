@@ -2,7 +2,7 @@
   "name": "console-menu",
   "version": "0.1.0",
   "description": "A scrollable menu for the Node.js console",
-  "main": "console-menu.js",
+  "main": "src/console-menu.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
