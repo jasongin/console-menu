@@ -15,6 +15,7 @@ export interface Options {
     border?: boolean;
     pageSize?: number;
     helpMessage?: string;
+    showKeypress?: boolean;
 }
 /**
  * @description Displays a menu of items in the console and asynchronously waits for the user to select an item.

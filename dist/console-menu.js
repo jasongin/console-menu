@@ -1,6 +1,7 @@
 import os from 'os';
 import readline from 'readline';
-import keypress from 'keypress';
+// /* keypress */ import keypress from 'keypress'
+import ioHook from 'iohook';
 const isType = (arg) => true; // A type guard to enforce a type
 /**
  * @description Displays a menu of items in the console and asynchronously waits for the user to select an item.
@@ -19,6 +20,7 @@ export default async function menu(items, options = {}) {
     }
     options.pageSize = (_a = options.pageSize) !== null && _a !== void 0 ? _a : 0;
     options.helpMessage = (_b = options.helpMessage) !== null && _b !== void 0 ? _b : 'Type a hotkey or use Down/Up arrows then Enter to choose an item.';
+    options.showKeypress = true;
     if (!isType(options))
         return null;
     /* Begin */
@@ -32,26 +34,35 @@ export default async function menu(items, options = {}) {
     let scrollOffset = 0;
     printMenu(items, options, selectedIndex, scrollOffset);
     return new Promise((resolve, reject) => {
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        keypress(process.stdin);
-        const handleMenuKeypress = (ch, key) => {
-            let selection = undefined;
+        // /* keypress */ process.stdin.setRawMode(true)
+        // /* keypress */ process.stdin.resume() // Begin reading from stdin so the process does not exit.
+        // /* keypress */ keypress(process.stdin) // enhance with 'keypress' event
+        // /* keypress */ process.stdin.on('keypress', handleMenuKeypress)
+        ioHook.on('keydown', handleMenuKeypress);
+        ioHook.start();
+        function handleMenuKeypress(key) {
+            key.char = String.fromCharCode(key.rawcode);
+            menuAction(key);
+        }
+        const menuAction = (key) => {
+            let selection;
             if (isEnter(key)) {
                 selection = items[selectedIndex];
             }
-            else if (ch) {
-                selection = items.find(item => item.hotkey && item.hotkey === ch)
-                    || items.find(item => item.hotkey && item.hotkey.toLowerCase() === ch.toLowerCase());
+            else if (!isCancelCommand(key)) {
+                selection = items.find(item => item.hotkey && item.hotkey === key)
+                    || items.find(item => item.hotkey && item.hotkey.toLowerCase() === key.char.toLowerCase());
             }
-            let newIndex = null;
+            let newIndex;
             if (selection || isCancelCommand(key)) {
-                process.stdin.removeListener('keypress', handleMenuKeypress);
-                process.stdin.setRawMode(false);
+                ioHook.off('keydown', handleMenuKeypress);
+                // /* keypress */ process.stdin.off('keypress', handleMenuKeypress)
+                // /* keypress */ process.stdin.setRawMode(false)
+                // /* keypress */ process.stdin.pause()
                 resetCursor(options, selectedIndex, scrollOffset);
                 readline.clearScreenDown(process.stdout);
-                process.stdin.pause();
-                resolve(selection);
+                ioHook.stop();
+                return resolve(selection);
             }
             else if (isUpCommand(key) && selectedIndex > 0) {
                 newIndex = selectedIndex - 1;
@@ -69,8 +80,7 @@ export default async function menu(items, options = {}) {
                     newIndex++;
             }
             else if (isPageDownCommand(key) && selectedIndex < count - 1) {
-                newIndex = (options.pageSize
-                    ? Math.min(count - 1, selectedIndex + options.pageSize) : count - 1);
+                newIndex = (options.pageSize ? Math.min(count - 1, selectedIndex + options.pageSize) : count - 1);
                 while (newIndex >= 0 && items[newIndex].separator)
                     newIndex--;
             }
@@ -84,7 +94,7 @@ export default async function menu(items, options = {}) {
                 while (newIndex >= 0 && items[newIndex].separator)
                     newIndex--;
             }
-            if (newIndex !== null && newIndex >= 0 && newIndex < count) {
+            if (newIndex !== undefined && newIndex >= 0 && newIndex < count) {
                 resetCursor(options, selectedIndex, scrollOffset);
                 selectedIndex = newIndex;
                 // Adjust the scroll offset when the selection moves off the page.
@@ -97,29 +107,30 @@ export default async function menu(items, options = {}) {
                         ? Math.min(count - options.pageSize, scrollOffset + options.pageSize)
                         : selectedIndex - options.pageSize + 1);
                 }
-                printMenu(items, options, selectedIndex, scrollOffset);
+                printMenu(items, options, selectedIndex, scrollOffset, key);
+            }
+            else if (options.showKeypress) {
+                resetCursor(options, selectedIndex, scrollOffset);
+                printMenu(items, options, selectedIndex, scrollOffset, key);
             }
         };
-        process.stdin.addListener('keypress', handleMenuKeypress);
     });
 }
-const isEnter = key => key && (key.name === 'enter' || key.name === 'return');
-const isUpCommand = key => key && key.name === 'up';
-const isDownCommand = key => key && key.name === 'down';
-const isPageUpCommand = key => key && key.name === 'pageup';
-const isPageDownCommand = key => key && key.name === 'pagedown';
-const isGoToFirstCommand = key => key && key.name === 'home';
-const isGoToLastCommand = key => key && key.name === 'end';
-const isCancelCommand = key => key && (key.name === 'escape' || (key.ctrl && key.name == 'c'));
+const isEnter = (key) => key && key.rawcode === 13; /* ↵ */
+const isUpCommand = (key) => key && key.rawcode === 38; /* 🠕 */
+const isDownCommand = (key) => key && key.rawcode === 40; /* 🠗 */
+const isPageUpCommand = (key) => key && key.rawcode === 33; /* ⭱ */
+const isPageDownCommand = (key) => key && key.rawcode === 34; /* ⭳ */
+const isGoToLastCommand = (key) => key && key.rawcode === 35; /* ⭲ */
+const isGoToFirstCommand = (key) => key && key.rawcode === 36; /* ⭰ */
+const isCancelCommand = (key) => key && (key.rawcode === 27 /* ESC */ || (key.ctrlKey && key.char == 'C'));
 function resetCursor(options, selectedIndex, scrollOffset) {
     readline.moveCursor(process.stdout, -3, -(options.header ? 1 : 0)
         - (options.border ? (options.header ? 2 : 1) : 0)
         - selectedIndex + scrollOffset);
 }
-function printMenu(items, options, selectedIndex, scrollOffset) {
-    const repeat = (s, n) => {
-        return Array(n + 1).join(s);
-    };
+const repeat = (s, n) => Array(n + 1).join(s);
+function printMenu(items, options, selectedIndex, scrollOffset, key) {
     let width = 0;
     for (let i = 0; i < items.length; i++) {
         if (items[i].title && 4 + items[i].title.length > width) {
@@ -176,6 +187,22 @@ function printMenu(items, options, selectedIndex, scrollOffset) {
         }
     }
     process.stdout.write(options.helpMessage);
-    readline.moveCursor(process.stdout, -(options.helpMessage).length + prefix.length + 2, -(options.border ? 1 : 0) - (scrollEnd - scrollOffset) + selectedIndex - scrollOffset);
+    if (options.showKeypress) {
+        process.stdout.write(os.EOL + os.EOL);
+        console.debug('.' + repeat('-', 62) + '.');
+        console.debug('| char | shift | ctrl  | alt   | meta  | key   | raw | type    |');
+        if (key) {
+            console.debug('|', key.char.padStart(4, ' '), '|'.padEnd(6 - l(key.shiftKey), ' '), key.shiftKey, '|'.padEnd(6 - l(key.ctrlKey), ' '), key.ctrlKey, '|'.padEnd(6 - l(key.altKey), ' '), key.altKey, '|'.padEnd(6 - l(key.metaKey), ' '), key.metaKey, '|'.padEnd(6 - l(key.keycode), ' '), key.keycode, '|'.padEnd(4 - l(key.rawcode), ' '), key.rawcode, '|'.padEnd(7 - l(key.type), ' '), key.type, '|');
+        }
+        else {
+            console.debug('|' + repeat(' ', 62) + '|');
+        }
+        console.debug('\'' + repeat('-', 62) + '\'');
+    }
+    readline.moveCursor(process.stdout, -options.helpMessage.length + prefix.length + 2, -(options.border ? 1 : 0)
+        - (scrollEnd - scrollOffset)
+        + selectedIndex - scrollOffset
+        - (options.showKeypress ? 6 : 0));
 }
+const l = v => v.toString().length;
 //# sourceMappingURL=console-menu.js.map

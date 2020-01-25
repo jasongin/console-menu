@@ -2,7 +2,7 @@
 import menu from './console-menu';
 if (process.env.NODE_ENV === 'dev')
     console.clear();
-menu([
+const loop = () => menu([
     { separator: true },
     { hotkey: '1', title: 'One' },
     { hotkey: '2', title: 'Two', selected: true },
@@ -16,7 +16,6 @@ menu([
     header: 'Test menu',
     border: true,
 }).then(item => {
-    console.debug('item', item);
     if (!item) {
         return null;
     }
@@ -24,6 +23,7 @@ menu([
         return item;
     }
     else {
+        console.log('You chose: ' + JSON.stringify(item));
         return menu(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
             .map(hotkey => ({
             hotkey,
@@ -36,12 +36,13 @@ menu([
         });
     }
 }).then(item => {
-    console.debug('nextItem', item);
     if (item) {
         console.log('You chose: ' + JSON.stringify(item));
     }
     else {
         console.log('You cancelled the menu.');
     }
+    return loop();
 });
+loop();
 //# sourceMappingURL=example.js.map

@@ -17,6 +17,7 @@ interface SecondLevelItem extends BaseItem {
 
 type SecondLevel = FirstLevel | SecondLevelItem | null
 
+const loop = () =>
 menu<FirstLevel>([
   { separator: true },
   { hotkey: '1', title: 'One' },
@@ -32,13 +33,12 @@ menu<FirstLevel>([
   border: true,
 }).then<SecondLevel>(item => {
 
-  console.debug('item', item)
-
   if (!item) {
     return null
   } else if(!item.cascade) {
     return item
   } else {
+    console.log('You chose: ' + JSON.stringify(item))
     return menu<SecondLevelItem>(
       ['a','b','c','d','e','f','g','h','i','j']
         .map(hotkey => ({
@@ -54,10 +54,12 @@ menu<FirstLevel>([
     )
   }
 }).then(item => {
-  console.debug('nextItem', item)
   if (item) {
     console.log('You chose: ' + JSON.stringify(item))
   } else {
     console.log('You cancelled the menu.')
   }
+  return loop()
 })
+
+loop()
