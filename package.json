@@ -1,25 +1,41 @@
 {
   "name": "console-menu",
-  "version": "0.1.0",
-  "description": "A scrollable menu for the Node.js console",
-  "main": "src/console-menu.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "version": "0.2.0",
+  "description": "Scrollable menu for the Node.js console. Every true esquire's everyday tool.",
+  "license": "MIT",
+  "author": "Vítězslav Ackermann Ferko <qwerty@qry.me>",
+  "homepage": "https://github.com/ackvf/console-menu#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jasongin/console-menu.git"
+    "url": "git+https://github.com/ackvf/console-menu.git"
   },
   "keywords": [
-    "menu"
+    "menu",
+    "cli",
+    "console",
+    "node",
+    "typescript"
   ],
-  "author": "",
-  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jasongin/console-menu/issues"
+    "url": "https://github.com/ackvf/console-menu/issues"
   },
-  "homepage": "https://github.com/jasongin/console-menu#readme",
+  "main": "dist/console-menu.js",
+  "type": "module",
+  "engines": {
+    "node": ">=13",
+    "typescript": ">=3.8.0-beta"
+  },
+  "scripts": {
+    "start": "node --es-module-specifier-resolution=node dist/example.js",
+    "dev": "tsc-watch --onCompilationComplete \"npm start\"",
+    "build": "tsc"
+  },
   "dependencies": {
     "keypress": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "13.1.8",
+    "tsc-watch": "^4.1.0",
+    "typescript": "3.8.0-beta"
   }
 }
