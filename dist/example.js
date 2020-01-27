@@ -1,6 +1,7 @@
 // A simple interactive console app to test the console-menu module.
 import menu from './console-menu';
-if (process.env.NODE_ENV === 'dev')
+const IS_DEV = process.env.NODE_ENV === 'development';
+if (IS_DEV)
     console.clear();
 const loop = () => menu([
     { separator: true },
@@ -12,6 +13,8 @@ const loop = () => menu([
     { hotkey: '0', title: 'Do something else...', cascade: true },
     { separator: true },
     { hotkey: '?', title: 'Help' },
+    { hotkey: 'C', title: 'Clear Console' },
+    { hotkey: 'X', title: 'Exit loop' },
 ], {
     header: 'Test menu',
     border: true,
@@ -38,11 +41,15 @@ const loop = () => menu([
 }).then(item => {
     if (item) {
         console.log('You chose: ' + JSON.stringify(item));
+        if (item.hotkey === 'C')
+            console.clear();
+        if (item.hotkey === 'X')
+            return;
     }
     else {
         console.log('You cancelled the menu.');
     }
-    return loop();
+    return IS_DEV && loop();
 });
 loop();
 //# sourceMappingURL=example.js.map

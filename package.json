@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "node --es-module-specifier-resolution=node dist/example.js",
-    "dev": "tsc-watch --onCompilationComplete \"npm start\"",
+    "dev": "cross-env NODE_ENV=development tsc-watch --onCompilationComplete \"npm start\"",
     "build": "tsc"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "13.1.8",
+    "cross-env": "^7.0.0",
     "tsc-watch": "^4.1.0",
     "typescript": "3.8.0-beta"
   }

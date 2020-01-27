@@ -81,7 +81,7 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
   printMenu(items, options, selectedIndex, scrollOffset)
 
   return new Promise((resolve, reject) => {
-    // /* keypress */ process.stdin.setRawMode(true)
+    process.stdin.setRawMode(true) // to capture CTRL+C
     // /* keypress */ process.stdin.resume() // Begin reading from stdin so the process does not exit.
 
     // /* keypress */ keypress(process.stdin) // enhance with 'keypress' event
@@ -89,9 +89,10 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
 
     ioHook.on('keydown', handleMenuKeypress)
     ioHook.start()
+    ioHook.useRawcode(true)
 
     function handleMenuKeypress(key: IOHookKeyEvent) {
-      key.char = String.fromCharCode(key.rawcode)
+      setChar(key)
       menuAction(key)
     }
 
@@ -107,12 +108,12 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
       let newIndex: number | undefined
       if (selection || isCancelCommand(key)) {
         ioHook.off('keydown', handleMenuKeypress)
-        // /* keypress */ process.stdin.off('keypress', handleMenuKeypress)
-        // /* keypress */ process.stdin.setRawMode(false)
         // /* keypress */ process.stdin.pause()
+        // /* keypress */ process.stdin.off('keypress', handleMenuKeypress)
         resetCursor(options, selectedIndex, scrollOffset)
         readline.clearScreenDown(process.stdout)
         ioHook.stop()
+        process.stdin.setRawMode(false)
         return resolve(selection)
       } else if (isUpCommand(key) && selectedIndex > 0) {
         newIndex = selectedIndex - 1
@@ -148,7 +149,6 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
             ? Math.min(count - options.pageSize, scrollOffset + options.pageSize)
             : selectedIndex - options.pageSize + 1)
         }
-
         printMenu(items, options, selectedIndex, scrollOffset, key)
       } else if (options.showKeypress) {
         resetCursor(options, selectedIndex, scrollOffset)
@@ -158,14 +158,16 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
   })
 }
 
-const isEnter             = (key: IOHookKeyEvent) => key && key.rawcode === 13 /* ↵ */
-const isUpCommand         = (key: IOHookKeyEvent) => key && key.rawcode === 38 /* 🠕 */
-const isDownCommand       = (key: IOHookKeyEvent) => key && key.rawcode === 40 /* 🠗 */
-const isPageUpCommand     = (key: IOHookKeyEvent) => key && key.rawcode === 33 /* ⭱ */
-const isPageDownCommand   = (key: IOHookKeyEvent) => key && key.rawcode === 34 /* ⭳ */
-const isGoToLastCommand   = (key: IOHookKeyEvent) => key && key.rawcode === 35 /* ⭲ */
-const isGoToFirstCommand  = (key: IOHookKeyEvent) => key && key.rawcode === 36 /* ⭰ */
-const isCancelCommand     = (key: IOHookKeyEvent) => key && (key.rawcode === 27 /* ESC */ || (key.ctrlKey && key.char == 'C'))
+const setChar = (key: IOHookKeyEvent, char = String.fromCharCode(key.rawcode)) => (key.char = char, key)
+
+const isEnter             = (key: IOHookKeyEvent) => key.rawcode === 13 /* ↵ */ && setChar(key, '↵')
+const isUpCommand         = (key: IOHookKeyEvent) => key.rawcode === 38 /* 🠕 */ && setChar(key, '🠕')
+const isDownCommand       = (key: IOHookKeyEvent) => key.rawcode === 40 /* 🠗 */ && setChar(key, '🠗')
+const isPageUpCommand     = (key: IOHookKeyEvent) => key.rawcode === 33 /* ⭱ */ && setChar(key, '⭱')
+const isPageDownCommand   = (key: IOHookKeyEvent) => key.rawcode === 34 /* ⭳ */ && setChar(key, '⭳')
+const isGoToLastCommand   = (key: IOHookKeyEvent) => key.rawcode === 35 /* ⭲ */ && setChar(key, '⭲')
+const isGoToFirstCommand  = (key: IOHookKeyEvent) => key.rawcode === 36 /* ⭰ */ && setChar(key, '⭰')
+const isCancelCommand     = (key: IOHookKeyEvent) => (key.rawcode === 27 /* ESC */ || (key.ctrlKey && key.rawcode == 67 /* C */)) && setChar(key, 'ESC')
 
 function resetCursor(options: DefinedOptions, selectedIndex: number, scrollOffset: number) {
   readline.moveCursor(process.stdout, -3,
