@@ -44,7 +44,7 @@ interface DefinedOptions extends Options {
 
 type Maybe<T> = T | null | undefined
 
-const isType = <T>(arg: any): arg is T => true // A type guard to enforce a type
+declare function assert<T>(a: any): asserts a is T;
 type Unpacked<T> = T extends (infer U)[] ? U : T
 
 /**
@@ -66,7 +66,7 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
   options.pageSize = options.pageSize ?? 0
   options.helpMessage = options.helpMessage ?? 'Type a hotkey or use Down/Up arrows then Enter to choose an item.'
   options.showKeypress = true
-  if (!isType<DefinedOptions>(options)) return null
+  assert<DefinedOptions>(options)
 
   /* Begin */
 
