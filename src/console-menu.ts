@@ -82,6 +82,7 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
 
   return new Promise((resolve, reject) => {
     process.stdin.setRawMode(true) // to capture CTRL+C
+    setTimeout(() => process.stdin.setRawMode(true))
     // /* keypress */ process.stdin.resume() // Begin reading from stdin so the process does not exit.
 
     // /* keypress */ keypress(process.stdin) // enhance with 'keypress' event
@@ -113,7 +114,8 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
         resetCursor(options, selectedIndex, scrollOffset)
         readline.clearScreenDown(process.stdout)
         ioHook.stop()
-        process.stdin.setRawMode(false)
+        setTimeout(() => process.stdin.setRawMode(false))
+        // process.stdin.setRawMode(false)
         return resolve(selection)
       } else if (isUpCommand(key) && selectedIndex > 0) {
         newIndex = selectedIndex - 1
