@@ -44,7 +44,7 @@ interface DefinedOptions extends Options {
 
 type Maybe<T> = T | null | undefined
 
-declare function assert<T>(a: any): asserts a is T;
+function assert<T>(a: any): asserts a is T { }
 type Unpacked<T> = T extends (infer U)[] ? U : T
 
 /**
@@ -133,6 +133,10 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
       } else if (isGoToLastCommand(key) && selectedIndex < count - 1) {
         newIndex = count - 1
         while (newIndex >= 0 && items[newIndex].separator) newIndex--
+      } else if (options.showKeypress) {
+        // map remaining keys
+        isLeftCommand(key)
+        || isRightCommand(key)
       }
 
       if (newIndex !== undefined && newIndex >= 0 && newIndex < count) {
@@ -160,13 +164,15 @@ export default async function menu<TItem extends Item>(items: TItem[], options: 
 
 const setChar = (key: IOHookKeyEvent, char = String.fromCharCode(key.rawcode)) => (key.char = char, key)
 
-const isEnter             = (key: IOHookKeyEvent) => key.rawcode === 13 /* ↵ */ && setChar(key, '↵')
-const isUpCommand         = (key: IOHookKeyEvent) => key.rawcode === 38 /* 🠕 */ && setChar(key, '🠕')
-const isDownCommand       = (key: IOHookKeyEvent) => key.rawcode === 40 /* 🠗 */ && setChar(key, '🠗')
-const isPageUpCommand     = (key: IOHookKeyEvent) => key.rawcode === 33 /* ⭱ */ && setChar(key, '⭱')
-const isPageDownCommand   = (key: IOHookKeyEvent) => key.rawcode === 34 /* ⭳ */ && setChar(key, '⭳')
-const isGoToLastCommand   = (key: IOHookKeyEvent) => key.rawcode === 35 /* ⭲ */ && setChar(key, '⭲')
-const isGoToFirstCommand  = (key: IOHookKeyEvent) => key.rawcode === 36 /* ⭰ */ && setChar(key, '⭰')
+const isEnter             = (key: IOHookKeyEvent) => key.rawcode === 13 && setChar(key, '↵')
+const isLeftCommand       = (key: IOHookKeyEvent) => key.rawcode === 37 && setChar(key, '🠔')
+const isUpCommand         = (key: IOHookKeyEvent) => key.rawcode === 38 && setChar(key, '🠕')
+const isRightCommand      = (key: IOHookKeyEvent) => key.rawcode === 39 && setChar(key, '🠖')
+const isDownCommand       = (key: IOHookKeyEvent) => key.rawcode === 40 && setChar(key, '🠗')
+const isPageUpCommand     = (key: IOHookKeyEvent) => key.rawcode === 33 && setChar(key, '⭱')
+const isPageDownCommand   = (key: IOHookKeyEvent) => key.rawcode === 34 && setChar(key, '⭳')
+const isGoToLastCommand   = (key: IOHookKeyEvent) => key.rawcode === 35 && setChar(key, '⭲')
+const isGoToFirstCommand  = (key: IOHookKeyEvent) => key.rawcode === 36 && setChar(key, '⭰')
 const isCancelCommand     = (key: IOHookKeyEvent) => (key.rawcode === 27 /* ESC */ || (key.ctrlKey && key.rawcode == 67 /* C */)) && setChar(key, 'ESC')
 
 function resetCursor(options: DefinedOptions, selectedIndex: number, scrollOffset: number) {

@@ -2,7 +2,7 @@ import os from 'os';
 import readline from 'readline';
 // /* keypress */ import keypress from 'keypress'
 import ioHook from 'iohook';
-const isType = (arg) => true; // A type guard to enforce a type
+function assert(a) { }
 /**
  * @description Displays a menu of items in the console and asynchronously waits for the user to select an item.
  *
@@ -21,8 +21,7 @@ export default async function menu(items, options = {}) {
     options.pageSize = (_a = options.pageSize) !== null && _a !== void 0 ? _a : 0;
     options.helpMessage = (_b = options.helpMessage) !== null && _b !== void 0 ? _b : 'Type a hotkey or use Down/Up arrows then Enter to choose an item.';
     options.showKeypress = true;
-    if (!isType(options))
-        return null;
+    assert(options);
     /* Begin */
     const count = items.length;
     let selectedIndex = items.findIndex(item => item.selected);
@@ -95,6 +94,11 @@ export default async function menu(items, options = {}) {
                 while (newIndex >= 0 && items[newIndex].separator)
                     newIndex--;
             }
+            else if (options.showKeypress) {
+                // map remaining keys
+                isLeftCommand(key)
+                    || isRightCommand(key);
+            }
             if (newIndex !== undefined && newIndex >= 0 && newIndex < count) {
                 resetCursor(options, selectedIndex, scrollOffset);
                 selectedIndex = newIndex;
@@ -118,13 +122,15 @@ export default async function menu(items, options = {}) {
     });
 }
 const setChar = (key, char = String.fromCharCode(key.rawcode)) => (key.char = char, key);
-const isEnter = (key) => key.rawcode === 13 /* ↵ */ && setChar(key, '↵');
-const isUpCommand = (key) => key.rawcode === 38 /* 🠕 */ && setChar(key, '🠕');
-const isDownCommand = (key) => key.rawcode === 40 /* 🠗 */ && setChar(key, '🠗');
-const isPageUpCommand = (key) => key.rawcode === 33 /* ⭱ */ && setChar(key, '⭱');
-const isPageDownCommand = (key) => key.rawcode === 34 /* ⭳ */ && setChar(key, '⭳');
-const isGoToLastCommand = (key) => key.rawcode === 35 /* ⭲ */ && setChar(key, '⭲');
-const isGoToFirstCommand = (key) => key.rawcode === 36 /* ⭰ */ && setChar(key, '⭰');
+const isEnter = (key) => key.rawcode === 13 && setChar(key, '↵');
+const isLeftCommand = (key) => key.rawcode === 37 && setChar(key, '🠔');
+const isUpCommand = (key) => key.rawcode === 38 && setChar(key, '🠕');
+const isRightCommand = (key) => key.rawcode === 39 && setChar(key, '🠖');
+const isDownCommand = (key) => key.rawcode === 40 && setChar(key, '🠗');
+const isPageUpCommand = (key) => key.rawcode === 33 && setChar(key, '⭱');
+const isPageDownCommand = (key) => key.rawcode === 34 && setChar(key, '⭳');
+const isGoToLastCommand = (key) => key.rawcode === 35 && setChar(key, '⭲');
+const isGoToFirstCommand = (key) => key.rawcode === 36 && setChar(key, '⭰');
 const isCancelCommand = (key) => (key.rawcode === 27 /* ESC */ || (key.ctrlKey && key.rawcode == 67 /* C */)) && setChar(key, 'ESC');
 function resetCursor(options, selectedIndex, scrollOffset) {
     readline.moveCursor(process.stdout, -3, -(options.header ? 1 : 0)
