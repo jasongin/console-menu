@@ -5,7 +5,7 @@
  * Unicode Box Drawing symbols https://graphemica.com/blocks/box-drawing
  *
  *
- * Each table design consists of 5 rows, 6 columns.
+ * Each table design consists of 5 rows and 5 columns.
  * Ultimately, not all characters are needed, see the reference table below.
  *
  *
@@ -13,57 +13,57 @@
  * It is NECESSARY to use an unbreakable space at the end of each line
  * to prevent IDE from trimming the whitespaces and thus making uneven line lengths.
  * It can also be used to separate different designs horizontally.
- * Here is unbreakable space: " "
+ * Here is an unbreakable space ready to be used :) ->" "
 */
 
 `reference table
- ┏━──┳┓   AH  IB
- ┃  )││   VYYY
- │ []││    XXX
- ┣━/\╋┫   LOOOMJ
- ┗━\/┻┛   CPPPKD
+ ┏━─┳┓   AH KB - table body if header is off
+ ┣/\╋┫   IOOMJ - table body if header is on
+ ┃ )││   VYY
+ │[]││    XX
+ ┗\/┻┛   CPPLD
 `/*
  ABCD - corners
  H - horizontal line
  V - vertical line
  IJKLM - crosses
- YYY - unselected option
- XXX - selected option
- OOO - page up
- PPP - page down
+ YY - unselected option decorators
+ XX - selected option decorators
+ OO - page up indicator
+ PP - page down indicator
 */
 
 export const tables: string[] = (s => s.raw[0].split(/ ?\n/).slice(1, -1))`
-┌───┬┐ .---+. +---++ 
-│  )││ |  )|| |  )|| 
-│ []││ | []|| | []|| 
-├─/\┼┤ +-/\++ +-/\++ 
-└─\/┴┘ '-\/+' +-\/++ 
-╒═══╤╕╔═══╦╗┏━━━┳┓┌───┬┐┼───┼┼╋━━━╋╋ 
-│  )││║  )║║┃  )┃┃│  )│││  )││┃  )┃┃ 
-│ []││║ []║║┃ []┃┃│ []│││ []││┃ []┃┃ 
-╞═/\╪╡╠═/\╬╣┣━/\╋┫┢━/\╈┪┼─/\┼┼╋━/\╋╋ 
-╘═\/╧╛╚═\/╩╝┗━\/┻┛┗━\/┻┛┼─\/┼┼╋━\/╋╋ 
-┌────┐┌   ┬┐┌    ┐       
-│  ) │   )     )     )   
-│ [] │  []    []    []   
-│ /\ │├ /\┼┤  /\    /\   
-└─\/─┘└ \/┴┘└ \/ ┘  \/   
- ────  ──── ══════ ━━━━━━ 
-   )     )     )      )   
-  []    []    []     []   
-  /\   ─/\─ ══/\══ ━━/\━━ 
- ─\/─  ─\/─ ══\/══ ━━\/━━ 
-                   
-│  )││   )│ │  )   
-│ []││  []│ │ []   
-│ /\││ ─/\┼ │ /\   
-  \/    \/    \/   
+┌──┬┐ .--+. +--++ 
+├/\┼┤ +/\++ +/\++ 
+│ )││ | )|| | )|| 
+│[]││ |[]|| |[]|| 
+└\/┴┘ '\/+' +\/++ 
+╒══╤╕╔══╦╗┏━━┳┓┌──┬┐ ┼──┼┼ ╋━━╋╋ 
+╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪ ┼/\┼┼ ╋/\╋╋ 
+│ )││║ )║║┃ )┃┃│ )││ │ )││ ┃ )┃┃ 
+│[]││║[]║║┃[]┃┃│[]││ │[]││ ┃[]┃┃ 
+╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛ ┼\/┼┼ ╋\/╋╋ 
+┌───┐┌  ┬┐┌   ┐      
+│/\ │├/\┼┤ /\   /\   
+│ ) │  )    )    )   
+│[] │ []   []   []   
+└\/─┘└\/┴┘└\/ ┘ \/   
+ ───  ─── ═════ ━━━━━ 
+ /\   /\─ ═/\══ ━/\━━ 
+  )    )    )     )   
+ []   []   []    []   
+ \/─  \/─ ═\/══ ━\/━━ 
+                
+│/\││ /\┼ │/\   
+│ )││  )│ │ )   
+│[]││ []│ │[]   
+ \/   \/   \/   
 `
 
+// Count table designs ---------------------------------------------------------
 
-
-const TABLE_WIDTH = 6
+const TABLE_WIDTH = 5
 const TABLE_HEIGHT = 5
 
 let TABLE_COUNT = 0
@@ -73,13 +73,12 @@ for (let i = 0; i < tables.length; i += TABLE_WIDTH) {
   TABLE_COUNT += row.length / TABLE_WIDTH
 }
 
-
+// -----------------------------------------------------------------------------
 
 export default function getTableString(ix: number): string {
   if (ix > TABLE_COUNT || ix < 1) throw new RangeError(`There are ${TABLE_COUNT} tables available.`)
 
   const tableIndex = (ix - 1) * TABLE_WIDTH
-
 
   let rest = 0
   let row = 0
