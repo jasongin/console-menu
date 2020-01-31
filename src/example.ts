@@ -61,10 +61,13 @@ menu<FirstLevel>([
   if (item) {
     console.log('You chose: ' + JSON.stringify(item))
     if (item.hotkey === 'C') console.clear()
-    if (item.hotkey === 'X') return;
+    if (item.hotkey === 'X') return menu([{ title: 'Stay' }, { title: 'Exit', hotkey: 'X' }]);
   } else {
     console.log('You cancelled the menu.')
   }
+  return item
+}).then(item => {
+  if (item?.hotkey === 'X') return;
   return IS_DEV && loop()
 })
 
