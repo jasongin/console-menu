@@ -12,38 +12,39 @@
  * ! NOTE !
  * It is NECESSARY to use an unbreakable space at the end of each line
  * to prevent IDE from trimming the whitespaces and thus making uneven line lengths.
- * It can also be used to separate different designs horizontally.
+ * It can also be used to separate different designs vertically.
  * Here is an unbreakable space ready to be used :) ->" "
 */
 
 `reference table
- ┏━─┳┓   AH KB - table body if header is off
- ┣/\╋┫   IOOMJ - table body if header is on
- ┃ )││   VYY
- │[]││    XX
- ┗\/┻┛   CPPLD
+ ┏━─┳┓   AH KB - header
+ ┣/\╋┫   IOoMJ - body
+ ┃ )││   VYy  
+ │[]││    Xx  
+ ┗\/┻┛   CPpLD
+ options.tableString = "┏━─┳┓┣/\╋┫┃ )│││[]││┗\/┻┛"
 `/*
  ABCD - corners
  H - horizontal line
  V - vertical line
  IJKLM - crosses
- YY - unselected option decorators
- XX - selected option decorators
- OO - page up indicator
- PP - page down indicator
+ Yy - unselected option decorators
+ Xx - selected option decorators
+ Oo - page up indicator
+ Pp - page down indicator
 */
 
-export const tables: string[] = (s => s.raw[0].split(/ ?\n/).slice(1, -1))`
+export const tables: string[] = (s => s.raw[0].replace(/ /g, '').split('\n').slice(1, -1))`
 ┌──┬┐ .--+. +--++ 
 ├/\┼┤ +/\++ +/\++ 
 │ )││ | )|| | )|| 
 │[]││ |[]|| |[]|| 
 └\/┴┘ '\/+' +\/++ 
-╒══╤╕╔══╦╗┏━━┳┓┌──┬┐ ┼──┼┼ ╋━━╋╋ 
-╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪ ┼/\┼┼ ╋/\╋╋ 
-│ )││║ )║║┃ )┃┃│ )││ │ )││ ┃ )┃┃ 
-│[]││║[]║║┃[]┃┃│[]││ │[]││ ┃[]┃┃ 
-╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛ ┼\/┼┼ ╋\/╋╋ 
+╒══╤╕╔══╦╗┏━━┳┓┌──┬┐┌──┬┐ ┼──┼┼ ╋━━╋╋ 
+╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪┢/\╈┪ ┼/\┼┼ ╋/\╋╋ 
+│ )││║ )║║┃ )┃┃┃ )┃┃│ )││ │ )││ ┃ )┃┃ 
+│[]││║[]║║┃[]┃┃┃[]┃┃│[]││ │[]││ ┃[]┃┃ 
+╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛┗\/┻┛ ┼\/┼┼ ╋\/╋╋ 
 ┌───┐┌  ┬┐┌   ┐      
 │/\ │├/\┼┤ /\   /\   
 │ ) │  )    )    )   
