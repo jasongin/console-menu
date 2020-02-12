@@ -237,9 +237,9 @@ function printMenu(items: Item[], options: DefinedOptions, selectedIndex: number
     designString: [
       // see tablesDesigns.ts for reference
       A,H, ,K,B,
+       ,Y,y, , ,
       I,O,o,M,J,
-      V,Y,y, , ,
-      ,X,x, , ,
+      V,X,x, , ,
       C,P,p,L,D,
     ] = getTableString(designId),
   } = options

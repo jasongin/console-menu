@@ -12,17 +12,17 @@
  * ! NOTE !
  * It is NECESSARY to use an unbreakable space at the end of each line
  * to prevent IDE from trimming the whitespaces and thus making uneven line lengths.
- * It can also be used to separate different designs vertically.
+ * It can also be used to separate different designs vertically as all nbsp are removed when processed.
  * Here is an unbreakable space ready to be used :) ->" "
 */
 
 `reference table
- ┏━─┳┓   AH KB - header
- ┣/\╋┫   IOoMJ - body
- ┃ )││   VYy  
- │[]││    Xx  
- ┗\/┻┛   CPpLD
- options.tableString = "┏━─┳┓┣/\╋┫┃ )│││[]││┗\/┻┛"
+ ┏━─┳┓   AH KB
+ │ )││    Yy  
+ ┣/\╋┫   IOoMJ
+ ┃[]││   VXx  
+ ┗\/┻┛   CPpLD
+ options.tableString = "┏━─┳┓│ )││┣/\╋┫┃[]││┗\/┻┛"
 `/*
  ABCD - corners
  H - horizontal line
@@ -35,30 +35,45 @@
 */
 
 export const tables: string[] = (s => s.raw[0].replace(/ /g, '').split('\n').slice(1, -1))`
-┌──┬┐ .--+. +--++ 
-├/\┼┤ +/\++ +/\++ 
-│ )││ | )|| | )|| 
-│[]││ |[]|| |[]|| 
-└\/┴┘ '\/+' +\/++ 
-╒══╤╕╔══╦╗┏━━┳┓┌──┬┐┌──┬┐ ┼──┼┼ ╋━━╋╋ 
-╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪┢/\╈┪ ┼/\┼┼ ╋/\╋╋ 
-│ )││║ )║║┃ )┃┃┃ )┃┃│ )││ │ )││ ┃ )┃┃ 
-│[]││║[]║║┃[]┃┃┃[]┃┃│[]││ │[]││ ┃[]┃┃ 
-╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛┗\/┻┛ ┼\/┼┼ ╋\/╋╋ 
-┌───┐┌  ┬┐┌   ┐      
-│/\ │├/\┼┤ /\   /\   
-│ ) │  )    )    )   
-│[] │ []   []   []   
-└\/─┘└\/┴┘└\/ ┘ \/   
- ───  ─── ═════ ━━━━━ 
- /\   /\─ ═/\══ ━/\━━ 
-  )    )    )     )   
- []   []   []    []   
- \/─  \/─ ═\/══ ━\/━━ 
+┌──┬┐     ╭──┬╮ 
+│ )││  )  │  )││ 
+├/\┼┤ /\  ├ /\┼┤ 
+│[]││ []  │ []││ 
+└\/┴┘ \/  ╰\/┴╯ 
+.  .. +  ++ 
+  )     )   
+./\.. +/\++ 
+ []    []   
+.\/.. +\/++ 
+.--+. +--++ ┼──┼┼ ╬══╬╬ ╋━━╋╋ 
+| )|| | )|| │ )││ ║ )║║ ┃ )┃┃ 
++/\++ +/\++ ┼/\┼┼ ╬/\╬╬ ╋/\╋╋ 
+|[]|| |[]|| │[]││ ║[]║║ ┃[]┃┃ 
+'\/+' +\/++ ┼\/┼┼ ╬\/╬╬ ╋\/╋╋ 
+.──┬.╵──┬╵╶──┬╴ 
+│ )│││ )│││ )││ 
+├/\┼┤├/\┼┤├/\┼┤ 
+│[]│││[]│││[]││ 
+'\/┴'╷\/┴╷╶\/┴╴ 
+╒══╤╕╔══╦╗┏━━┳┓┏──┳┓ 
+│ )││║ )║║┃ )┃┃│ )││ 
+╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪ 
+│[]││║[]║║┃[]┃┃│[]││ 
+╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛ 
+┏──┳┓┌───┐┌  ┬┐┌   ┐ 
+│ )│││ ) │  )    )   
+│/\│││/\ │├/\┼┤ /\   
+│[]│││[] │ []   []   
+┗\/┻┛└\/─┘└\/┴┘└\/ ┘ 
+ ───  ═══  ━━━  
+  )    )    )   
+ /\   /\   /\   
+ []   []   []   
+ \/   \/   \/   
                 
-│/\││ /\┼ │/\   
-│ )││  )│ │ )   
-│[]││ []│ │[]   
+│ )││║ )║║┃ )┃┃ 
+│/\││║/\║║┃/\┃┃ 
+│[]││║[]║║┃[]┃┃ 
  \/   \/   \/   
 `
 
@@ -77,7 +92,7 @@ for (let i = 0; i < tables.length; i += TABLE_WIDTH) {
 // -----------------------------------------------------------------------------
 
 export default function getTableString(ix: number): string {
-  if (ix > TABLE_COUNT || ix < 1) throw new RangeError(`There are ${TABLE_COUNT} tables available.`)
+  if (ix > TABLE_COUNT || ix < 1) throw new RangeError(`There are ${TABLE_COUNT} tables available. (#${ix})`)
 
   const tableIndex = (ix - 1) * TABLE_WIDTH
 
