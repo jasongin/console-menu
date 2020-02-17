@@ -1,68 +1,76 @@
 // A simple interactive console app to test the console-menu module.
-
-import menu, { SeparatorItem, BaseItem, Action, Options } from './console-menu'
+import menu, { Item, Action, Options, Functional } from './console-menu'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
 if (IS_DEV) console.clear()
 
-interface FirstLevelItem extends BaseItem {
+interface FirstLevel extends Item {
   cascade?: boolean
   prevent?: boolean
   actions?: any
 }
 
-type FirstLevel = FirstLevelItem | SeparatorItem
 
 
-interface SecondLevelItem extends BaseItem {
+interface SecondLevelItem extends Item {
   subitem: true
 }
 
 type SecondLevel = FirstLevel | SecondLevelItem | null
 
-const design = (increment: number): Action => (item, options) => {
-  const [a = '', b = ''] = item.title.split(item.title.indexOf('/') > -1 ? '/' : ''+options.designId)
 
-  options.designId += increment
-  item.title = a + options.designId + b
-}
+const design = (increment: number): Action<FirstLevel> => (item, options) => options.designId += increment
+const designTitle: Functional<string> = (item, options) => `Switch design 🠔${options.designId}🠖`
 
-const border: Action = (item, options) => {
-  console.clear()
+const border: Action<FirstLevel> = (item, options, { console: { moveCursor, clearScreenDown }}) => {
   options.border = !options.border
+
+  moveCursor(0, (options.header ? 2 : 1) * (options.border ? 1 : -1))
+  clearScreenDown()
 }
 
-const header: Action = (item, options) => {
-  console.clear()
+const header: Action<FirstLevel> = (item, options, { console: { moveCursor, clearScreenDown }}) => {
   //@ts-ignore
   const t = options._header
   //@ts-ignore
   options._header = options.header
   options.header = t
+
+  moveCursor(0, (options.border ? 2 : 1) * (t ? 1 : -1))
+  clearScreenDown()
+}
+
+const inscribe: Action<FirstLevel> = (item, options, {console : {inscribe, moveCursor}}) => {
+  setTimeout(() => {
+    moveCursor(3);
+    inscribe('Nope')
+    moveCursor(-3);
+  })
 }
 
 const options: Options = {
   header: 'Test menu',
   border: true,
+  designId: 20,
   // pageSize: 3
 }
 
 const loop = () =>
 menu<FirstLevel>([
   { hotkey: '1', title: 'One' },
-  { hotkey: '2', title: 'Two', selected: false },
-  { hotkey: '3', title: 'Three' },
-  { hotkey: '4', title: 'Four' },
+  { hotkey: '2', title: 'Two' },
+  { hotkey: '3', title: 'Three', selected: true },
+  { hotkey: '4', title: 'Four', actions: { 39: inscribe }, helpMessage: 'Press 🠔/🠖 and watch!' },
   { separator: true },
-  { hotkey: '9', title: 'Do something else+...', cascade: true },
-  { hotkey: '0', title: 'Do something else...', cascade: true },
+  { hotkey: '9', title: 'Do something else+H...', cascade: true },
+  { hotkey: '0', title: 'Do something else-H...', cascade: true },
   { separator: true },
-  { hotkey: 'D', title: 'Switch design 🠔/🠖', prevent: true, actions: { 37: design(-1), 39: design(+1) }, helpMessage: 'Use 🠔/🠖 to switch Design.' },
-  { hotkey: 'B', title: 'Switch border 🠔/🠖', prevent: true, actions: { 37: border, 39: border }, helpMessage: 'Use 🠔/🠖 to switch Border.' },
+  { hotkey: 'D', title: designTitle, prevent: true, actions: { 37: design(-1), 39: design(+1) }, helpMessage: 'Use 🠔/🠖 to switch Design.' },
   { hotkey: 'H', title: 'Switch header 🠔/🠖', prevent: true, actions: { 37: header, 39: header }, helpMessage: 'Use 🠔/🠖 to switch Header.' },
-  { hotkey: 'C', title: 'Clear Console' },
-  { hotkey: 'X', title: 'Exit loop' },
+  { hotkey: 'B', title: 'Switch border 🠔/🠖', prevent: true, actions: { 37: border, 39: border }, helpMessage: 'Use 🠔/🠖 to switch Border.' },
+  { hotkey: 'C', title: 'Clear Console', helpMessage: '' },
+  { hotkey: 'X', title: 'Exit loop', helpMessage: '' },
 ], options).then<SecondLevel>(item => {
 
   if (!item) {
@@ -79,9 +87,10 @@ menu<FirstLevel>([
           subitem: true,
         })),
       {
+        ...options,
         border: true,
         pageSize: 5,
-        ...item.hotkey === '9' && {header:  'Another menu'}
+        ...item.hotkey === '9' && {header:  'Another menu'} || {header: undefined}
       }
     )
   }
@@ -89,7 +98,7 @@ menu<FirstLevel>([
   if (item) {
     console.log('You chose: ' + JSON.stringify(item))
     if (item.hotkey === 'C') console.clear()
-    if (item.hotkey === 'X') return menu([{ title: 'Stay' }, { title: 'Exit', hotkey: 'X' }]);
+    if (item.hotkey === 'X') return menu([{ title: 'Stay' }, { title: 'Exit', hotkey: 'X', helpMessage: 'Choose Exit and then press Ctrl+C.' }], {helpMessage: ''});
   } else {
     console.log('You cancelled the menu.')
   }

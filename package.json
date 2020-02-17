@@ -1,6 +1,6 @@
 {
   "name": "console-menu",
-  "version": "0.2.0",
+  "version": "0.2.17",
   "description": "Scrollable menu for the Node.js console. Every true esquire's everyday tool.",
   "license": "MIT",
   "author": "Vítězslav Ackermann Ferko <qwerty@qry.me>",
@@ -31,11 +31,11 @@
     "build": "tsc"
   },
   "dependencies": {
-    "iohook": "^0.6.4",
+    "iohook": "^0.6.5",
     "keypress": "^0.2.1"
   },
   "devDependencies": {
-    "@types/node": "13.1.8",
+    "@types/node": "^13",
     "cross-env": "^7.0.0",
     "tsc-watch": "^4.1.0",
     "typescript": "3.8.0-beta"

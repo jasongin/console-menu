@@ -5,7 +5,7 @@
  * Unicode Box Drawing symbols https://graphemica.com/blocks/box-drawing
  *
  *
- * Each table design consists of 5 rows and 5 columns.
+ * Each table design consists of 5 rows and 6 columns.
  * Ultimately, not all characters are needed, see the reference table below.
  *
  *
@@ -15,76 +15,75 @@
  * It can also be used to separate different designs vertically as all nbsp are removed when processed.
  * Here is an unbreakable space ready to be used :) ->" "
 */
-
 `reference table
- ┏━─┳┓   AH KB
- │ )││    Yy  
- ┣/\╋┫   IOoMJ
- ┃[]││   VXx  
- ┗\/┻┛   CPpLD
- options.tableString = "┏━─┳┓│ )││┣/\╋┫┃[]││┗\/┻┛"
+ ┏××┳━┓   A     K  h¹ B
+ ┃ )┃×┃   v¹ Yy v²    v³
+ ┣/\╋━┫   I  Oo M  h² J
+ ┃[]┃×┃   v⁴ Xx v⁵    v⁶
+ ┗\/┻━┛   C  Pp L  h³ D
+options.tableString = "┏××┳━┓┃ )┃×┃┣/\╋━┫┃[]┃×┃┗\/┻━┛"
 `/*
- ABCD - corners
- H - horizontal line
- V - vertical line
+ h¹-h³ - horizontal line
+ v¹-v⁶ - vertical line
+ ABCD  - corners
  IJKLM - crosses
  Yy - unselected option decorators
  Xx - selected option decorators
  Oo - page up indicator
  Pp - page down indicator
+ ×  - ignored
 */
 
+const TABLE_WIDTH = 6
+const TABLE_HEIGHT = 5
 export const tables: string[] = (s => s.raw[0].replace(/ /g, '').split('\n').slice(1, -1))`
-┌──┬┐     ╭──┬╮ 
-│ )││  )  │  )││ 
-├/\┼┤ /\  ├ /\┼┤ 
-│[]││ []  │ []││ 
-└\/┴┘ \/  ╰\/┴╯ 
-.  .. +  ++ 
-  )     )   
-./\.. +/\++ 
- []    []   
-.\/.. +\/++ 
-.--+. +--++ ┼──┼┼ ╬══╬╬ ╋━━╋╋ 
-| )|| | )|| │ )││ ║ )║║ ┃ )┃┃ 
-+/\++ +/\++ ┼/\┼┼ ╬/\╬╬ ╋/\╋╋ 
-|[]|| |[]|| │[]││ ║[]║║ ┃[]┃┃ 
-'\/+' +\/++ ┼\/┼┼ ╬\/╬╬ ╋\/╋╋ 
-.──┬.╵──┬╵╶──┬╴ 
-│ )│││ )│││ )││ 
-├/\┼┤├/\┼┤├/\┼┤ 
-│[]│││[]│││[]││ 
-'\/┴'╷\/┴╷╶\/┴╴ 
-╒══╤╕╔══╦╗┏━━┳┓┏──┳┓ 
-│ )││║ )║║┃ )┃┃│ )││ 
-╞/\╪╡╠/\╬╣┣/\╋┫┢/\╈┪ 
-│[]││║[]║║┃[]┃┃│[]││ 
-╘\/╧╛╚\/╩╝┗\/┻┛┗\/┻┛ 
-┏──┳┓┌───┐┌  ┬┐┌   ┐ 
-│ )│││ ) │  )    )   
-│/\│││/\ │├/\┼┤ /\   
-│[]│││[] │ []   []   
-┗\/┻┛└\/─┘└\/┴┘└\/ ┘ 
- ───  ═══  ━━━  
-  )    )    )   
- /\   /\   /\   
- []   []   []   
- \/   \/   \/   
-                
-│ )││║ )║║┃ )┃┃ 
-│/\││║/\║║┃/\┃┃ 
-│[]││║[]║║┃[]┃┃ 
- \/   \/   \/   
+┌──┬─┐      ╭──┬─╮ 
+│ )│ │  )   │ )│ │ 
+├/\┼─┤ /\   ├/\┼─┤ 
+│[]│ │ []   │[]│ │ 
+└\/┴─┘ \/   ╰\/┴─╯ 
+·  · ·+  + + 
+  )     )    
+·/\· ·+/\+ + 
+ []    []    
+·\/· ·+\/+ + 
+.--+-.+--+-+┼──┼─┼╬══╬═╬╋━━╋━╋ 
+| )| || )| |│ )│ │║ )║ ║┃ )┃ ┃ 
++/\+-++/\+-+┼/\┼─┼╬/\╬═╬╋/\╋━╋ 
+|[]| ||[]| |│[]│ │║[]║ ║┃[]┃ ┃ 
+'\/+-'+\/+-+┼\/┼─┼╬\/╬═╬╋\/╋━╋ 
+.──┬─.╵──┬─╵╶──┬─╴ 
+│ )│ ││ )│ ││ )│ │ 
+├/\┼─┤├/\┼─┤├/\┼─┤ 
+│[]│ ││[]│ ││[]│ │ 
+'\/┴─'╷\/┴─╷╶\/┴─╴ 
+╒══╤═╕╔══╦═╗┏━━┳━┓┏──┳─┓ 
+│ )│ │║ )║ ║┃ )┃ ┃│ )│ │ 
+╞/\╪═╡╠/\╬═╣┣/\╋━┫┢/\╈─┪ 
+│[]│ │║[]║ ║┃[]┃ ┃│[]│ │ 
+╘\/╧═╛╚\/╩═╝┗\/┻━┛┗\/┻─┛ 
+┏──┳─┓┌────┐┌  ┬ ┐┌    ┐ 
+│ )│ ││ )  │  )     )    
+│/\│ ││/\  │├/\┼ ┤ /\    
+│[]│ ││[]  │ []    []    
+┗\/┻─┛└\/──┘└\/┴ ┘└\/  ┘ 
+ ────  ════  ━━━━  
+  )     )     )    
+ /\    /\    /\    
+ []    []    []    
+ \/    \/    \/    
+                   
+│ )│ │║ )║ ║┃ )┃ ┃ 
+│/\│ │║/\║ ║┃/\┃ ┃ 
+│[]│ │║[]║ ║┃[]┃ ┃ 
+ \/    \/    \/    
 `
 
 // Count table designs ---------------------------------------------------------
 
-const TABLE_WIDTH = 5
-const TABLE_HEIGHT = 5
-
 let TABLE_COUNT = 0
 
-for (let i = 0; i < tables.length; i += TABLE_WIDTH) {
+for (let i = 0; i < tables.length; i += TABLE_HEIGHT) {
   const row = tables[i]
   TABLE_COUNT += row.length / TABLE_WIDTH
 }
